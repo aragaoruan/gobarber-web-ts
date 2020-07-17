@@ -1,8 +1,10 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useContext } from 'react';
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
+
+import { AuthContext } from '../../context/AuthContext';
 import getValidationErros from '../../utils/getValidationErros';
 
 import logoImg from '../../assets/logo.svg';
@@ -12,28 +14,42 @@ import Button from '../../components/Button';
 
 import { Container, Content, Background } from './styles';
 
+interface SingInFormData {
+  email: string;
+  password: string;
+}
+
 const SingIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  const handleSubmit = useCallback(async (data: object) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('Digite um e-mail válido'),
-        password: Yup.string().required('Senha obrigatório'),
-      });
+  const { singIn } = useContext(AuthContext);
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-    } catch (err) {
-      const errors = getValidationErros(err);
+  const handleSubmit = useCallback(
+    async (data: SingInFormData) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          password: Yup.string().required('Senha obrigatório'),
+        });
 
-      formRef.current?.setErrors(errors);
-    }
-  }, []);
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+        singIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        const errors = getValidationErros(err);
+
+        formRef.current?.setErrors(errors);
+      }
+    },
+    [singIn],
+  );
 
   return (
     <Container>
