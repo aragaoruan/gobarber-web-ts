@@ -1,14 +1,18 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
+import Route from './Route';
 
 import SingIn from '../pages/SingIn';
 import SingUp from '../pages/SingUp';
+import Dashboard from '../pages/Dashboard';
 
 const Routes: React.FC = () => {
   return (
     <Switch>
       <Route path="/" exact component={SingIn} />
       <Route path="/singup" component={SingUp} />
+
+      <Route path="/dashboard" isPrivate component={Dashboard} />
     </Switch>
   );
 };
